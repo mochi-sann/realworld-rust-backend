@@ -7,6 +7,7 @@ struct Tags {
 }
 
 pub async fn get_tags() -> impl Responder {
+    // TODO: update get the real article todos 
     let tags: Tags = Tags {
         tags: vec![
             "hoge".to_string(),
