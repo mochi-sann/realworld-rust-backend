@@ -1,0 +1,19 @@
+FROM rust:1.78
+
+WORKDIR /app
+
+COPY . .
+
+# Upgrade the system and install dependencies for PostgreSQL
+RUN apt-get update && \
+  apt-get upgrade -y -o DPkg::Options::=--force-confold && \
+  apt-get install -y -o DPkg::Options::=--force-confold \
+  curl unzip build-essential pkg-config libssl-dev \
+  postgresql-client libpq-dev
+
+# Install cargo-watch
+RUN cargo install cargo-watch
+
+# Install diesel_cli for PostgreSQL
+RUN cargo install sqlx-cli --no-default-features --features "postgres"
+

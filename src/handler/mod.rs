@@ -1,2 +1,3 @@
 pub mod helthcheck;
-pub mod user;
+pub mod tags;
+
