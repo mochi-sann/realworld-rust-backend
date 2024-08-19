@@ -2,6 +2,7 @@ use std::env;
 
 use actix_web::{middleware, web, App, HttpRequest, HttpServer};
 use dotenv::dotenv;
+use realworld_rust_backend::app_config::config_app;
 
 async fn index(req: HttpRequest) -> &'static str {
     println!("REQ: {req:?}");
@@ -10,7 +11,6 @@ async fn index(req: HttpRequest) -> &'static str {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    // dotenv().expect(".env file not found");
     dotenv().ok();
     let port = env::var("PORT")
         .unwrap_or_else(|_| "8080".to_string())
@@ -25,7 +25,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             // enable logger
             .wrap(middleware::Logger::default())
-            .service(web::resource("/index.html").to(|| async { "Hello world!Hello world!Hello world!Hello world!Hello world!Hello world!" }))
+            .configure(config_app)
             .service(web::resource("/").to(index))
     })
     .bind(("127.0.0.1", port))?
