@@ -2,7 +2,7 @@ use std::env;
 
 use actix_web::{middleware, web, App, HttpRequest, HttpServer};
 use dotenv::dotenv;
-use realworld_rust_backend::app_config::config_app;
+use realworld_rust_backend::{app_config::config_app, db};
 
 async fn index(req: HttpRequest) -> &'static str {
     println!("REQ: {req:?}");
@@ -19,10 +19,16 @@ async fn main() -> std::io::Result<()> {
 
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 
+    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    let pool = db::init_pool(&database_url)
+        .await
+        .expect("Failed to create pool");
+
     log::info!("starting HTTP server at http://localhost:{}", port);
 
-    HttpServer::new(|| {
+    HttpServer::new(move || {
         App::new()
+            .app_data(web::Data::new(pool.clone()))
             // enable logger
             .wrap(middleware::Logger::default())
             .configure(config_app)
