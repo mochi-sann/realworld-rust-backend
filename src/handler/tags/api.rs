@@ -17,7 +17,6 @@ impl Tags {
 }
 
 pub async fn get_tags(pool: web::Data<PgPool>) -> Result<impl Responder, Error> {
-    // TODO: update get the real article todos
     let list = Tag::list(&pool)
         .await
         .map_err(error::ErrorInternalServerError);
