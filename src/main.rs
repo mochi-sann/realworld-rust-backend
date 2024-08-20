@@ -36,6 +36,7 @@ async fn main() -> std::io::Result<()> {
 #[cfg(test)]
 mod tests {
     use actix_web::{body::to_bytes, dev::Service, http, test, Error};
+    use realworld_rust_backend::handler::helthcheck;
 
     use super::*;
 
@@ -51,6 +52,25 @@ mod tests {
 
         let response_body = resp.into_body();
         assert_eq!(to_bytes(response_body).await?, r##"Hello world!"##);
+
+        Ok(())
+    }
+    #[actix_web::test]
+    async fn test_helthcheck() -> Result<(), Error> {
+        let app = App::new().route(
+            "/api/helthcheck",
+            web::get().to(helthcheck::controllers::index),
+        );
+        let app = test::init_service(app).await;
+
+        let req = test::TestRequest::get().uri("/api/helthcheck").to_request();
+        let resp = app.call(req).await?;
+
+        assert_eq!(resp.status(), http::StatusCode::OK);
+
+        let response_body = resp.into_body();
+
+        assert_eq!(to_bytes(response_body).await?, "OK");
 
         Ok(())
     }
