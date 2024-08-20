@@ -12,16 +12,18 @@ pub fn config_app(cfg: &mut web::ServiceConfig) {
             )
             .service(web::resource("/tags").route(web::get().to(handler::tags::api::get_tags)))
             .service(
-                web::scope("/user")
-                    .service(
-                        web::resource("")
-                            .route(web::post().to(handler::user::api::signup))
-                            .route(web::put().to(handler::user::api::me))
-                            .route(web::get().to(handler::user::api::user_update)),
-                    )
+                web::scope("/users")
+                    .service(web::resource("").route(web::post().to(handler::user::api::signup)))
                     .service(
                         web::resource("/login").route(web::post().to(handler::user::api::signin)),
                     ),
+            )
+            .service(
+                web::scope("/user").service(
+                    web::resource("")
+                        .route(web::get().to(handler::user::api::me))
+                        .route(web::put().to(handler::user::api::user_update)),
+                ),
             ),
     );
 }

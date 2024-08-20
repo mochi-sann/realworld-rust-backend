@@ -1,6 +1,6 @@
-use chrono::{DateTime,  Utc};
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use sqlx::{ PgPool};
+use sqlx::PgPool;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Tag {
