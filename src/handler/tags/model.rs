@@ -10,14 +10,14 @@ pub struct Tag {
     pub updated_at: DateTime<Utc>,
 }
 impl Tag {
-    pub async fn list(connection: &PgPool) -> Result<Vec<Tag>, sqlx::Error> {
+    pub async fn list(pool: &PgPool) -> Result<Vec<Tag>, sqlx::Error> {
         let tags = sqlx::query_as!(
             Tag,
             r#"
             SELECT * FROM tags order by id ;
             "#,
         )
-        .fetch_all(connection)
+        .fetch_all(pool)
         .await?;
 
         Ok(tags)
