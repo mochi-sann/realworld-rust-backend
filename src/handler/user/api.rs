@@ -1,5 +1,7 @@
+use std::fmt::Debug;
+
 use actix_web::{web, HttpResponse, Responder};
-use sqlx::{pool, PgPool};
+use sqlx::PgPool;
 
 use super::{handler::NewUser, model::Users};
 
@@ -9,15 +11,19 @@ pub async fn signin() -> impl Responder {
 }
 
 pub async fn signup(pool: web::Data<PgPool>, form: web::Json<NewUser>) -> impl Responder {
-    Users::signup(
+    // let db_res = ;
+    // TODO:
+    match Users::signup(
         &pool,
         form.user.username.clone(),
         form.user.password.clone(),
         form.user.email.clone(),
     )
-    .await;
-    // TODO:
-    HttpResponse::Ok().body("users signup")
+    .await
+    {
+        Ok(..) => HttpResponse::Ok().body("user created"),
+        Err(..) => HttpResponse::UnprocessableEntity().body(""),
+    }
 }
 
 pub async fn me() -> impl Responder {

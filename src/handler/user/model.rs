@@ -1,5 +1,7 @@
 use bcrypt::{hash, DEFAULT_COST};
 use chrono::{DateTime, Utc};
+use jsonwebtoken::{EncodingKey, Header};
+use serde::{Deserialize, Serialize};
 use sqlx::{postgres::PgQueryResult, PgPool};
 
 pub struct Users {
@@ -13,6 +15,17 @@ pub struct Users {
     pub updated_at: DateTime<Utc>,
 }
 
+#[derive(Deserialize, Serialize)]
+pub struct TokenPayload {
+    // issued at
+    pub iat: i64,
+    // expiration
+    pub exp: i64,
+}
+
+static KEY: [u8; 32] = *include_bytes!("../../../secret.key"); // TODO:
+static ONE_DAY: i64 = 60 * 60 * 24; // in seconds
+                                    //
 impl Users {
     pub async fn signup(
         pool: &PgPool,
@@ -33,5 +46,19 @@ impl Users {
         )
         .execute(pool)
         .await
+    }
+    pub async fn ganarate_token(&self) -> String {
+        let now = Utc::now().timestamp(); // nanosecond -> second
+        let payload = TokenPayload {
+            iat: now,
+            exp: now + ONE_DAY,
+        };
+
+        jsonwebtoken::encode(
+            &Header::default(),
+            &payload,
+            &EncodingKey::from_secret(&KEY),
+        )
+        .unwrap()
     }
 }
