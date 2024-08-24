@@ -11,17 +11,16 @@ pub async fn signin() -> impl Responder {
 }
 
 pub async fn signup(pool: web::Data<PgPool>, form: web::Json<NewUser>) -> impl Responder {
-    // let db_res = ;
-    // TODO:
-    match Users::signup(
+    let new_user = Users::signup(
         &pool,
         form.user.username.clone(),
         form.user.password.clone(),
         form.user.email.clone(),
     )
-    .await
-    {
-        Ok(..) => HttpResponse::Ok().body("user created"),
+    .await;
+
+    match new_user {
+        Ok(value) => HttpResponse::Ok().json(value.add_token(Users::ganarate_token())),
         Err(..) => HttpResponse::UnprocessableEntity().body(""),
     }
 }

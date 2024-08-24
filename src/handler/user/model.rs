@@ -1,8 +1,14 @@
+use std::f32::consts::E;
+
 use bcrypt::{hash, DEFAULT_COST};
 use chrono::{DateTime, Utc};
 use jsonwebtoken::{EncodingKey, Header};
 use serde::{Deserialize, Serialize};
 use sqlx::{postgres::PgQueryResult, PgPool};
+
+use crate::handler::user::handler::NewrUserInfo;
+
+use super::handler::SignUpUserRes;
 
 pub struct Users {
     pub id: i32,
@@ -32,22 +38,27 @@ impl Users {
         username: String,
         password: String,
         email: String,
-    ) -> Result<PgQueryResult, sqlx::Error> {
+    ) -> Result<NewrUserInfo, sqlx::Error> {
         let hashed_password = hash(password, DEFAULT_COST).expect("could not hash password.");
-        sqlx::query!(
+
+        let new_user = sqlx::query_as!(
+            NewrUserInfo,
             r#"
             INSERT INTO users
             (username, email, "password", bio, image)
-            VALUES($1, $2, $3, '', '');
+            VALUES($1, $2, $3, '', '')
+            RETURNING email , username , bio , image;
             "#,
             username,
             email,
             hashed_password
         )
-        .execute(pool)
-        .await
+        .fetch_one(pool)
+        .await;
+
+        Ok(new_user?)
     }
-    pub async fn ganarate_token(&self) -> String {
+    pub fn ganarate_token() -> String {
         let now = Utc::now().timestamp(); // nanosecond -> second
         let payload = TokenPayload {
             iat: now,
