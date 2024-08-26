@@ -21,7 +21,7 @@ env "local" {
 env "dev" {
   // ... a different env
   migration {
-        // URL where the migration directory resides.
+    // URL where the migration directory resides.
     dir = "file://migrations"
   }
 
