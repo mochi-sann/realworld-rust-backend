@@ -31,7 +31,7 @@ atlas schema inspect \
   --url "postgres://postgres:postgres@localhost:5432/app-db?search_path=public&sslmode=disable" \
   --format '{{ sql . }}' >  schema/schema.sql
 
-atlas migrate diff create_blog_posts \
+atlas migrate diff create_todos \
   --dir "file://migrations" \
   --to "file://schema/schema.sql" \
   --dev-url "postgres://postgres:postgres@localhost:5432/app-db?search_path=public&sslmode=disable"

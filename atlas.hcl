@@ -11,6 +11,11 @@ env "local" {
   // Define the URL of the Dev Database for this environment
   // See: https://atlasgo.io/concepts/dev-database
   dev = "postgres://postgres:postgres@localhost:5432/app-db?search_path=public&sslmode=disable"
+  migration {
+    // URL where the migration directory resides.
+    dir = "file://migrations"
+  }
+
 }
 
 env "dev" {
