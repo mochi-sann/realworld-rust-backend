@@ -25,6 +25,7 @@ table "tags" {
     columns = [column.name]
   }
 }
+
 table "users" {
   schema = schema.public
   column "id" {
@@ -69,6 +70,9 @@ table "users" {
   }
   unique "users_email_key" {
     columns = [column.email]
+  }
+  unique "users_username_key" {
+    columns = [column.username]
   }
 }
 

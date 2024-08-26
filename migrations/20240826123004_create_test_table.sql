@@ -8,16 +8,6 @@ CREATE TABLE "tags" (
 );
 -- Create index "idx_todo_tags_name" to table: "tags"
 CREATE INDEX "idx_todo_tags_name" ON "tags" ("name");
--- Create "test" table
-CREATE TABLE "test" (
-  "id" serial NOT NULL,
-  "name" text NOT NULL,
-  "created_at" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  "updated_at" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY ("id")
-);
--- Create index "idx_test_tags_name" to table: "test"
-CREATE INDEX "idx_test_tags_name" ON "test" ("name");
 -- Create "users" table
 CREATE TABLE "users" (
   "id" serial NOT NULL,
@@ -29,8 +19,7 @@ CREATE TABLE "users" (
   "created_at" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "updated_at" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY ("id"),
-  CONSTRAINT "users_email_key" UNIQUE ("email"),
-  CONSTRAINT "users_username_key" UNIQUE ("username")
+  CONSTRAINT "users_email_key" UNIQUE ("email")
 );
 -- Create index "idx_new_todo_user_email" to table: "users"
 CREATE INDEX "idx_new_todo_user_email" ON "users" ("email");
