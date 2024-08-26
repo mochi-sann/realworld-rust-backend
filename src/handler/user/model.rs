@@ -33,6 +33,15 @@ static KEY: [u8; 32] = *include_bytes!("../../../secret.key"); // TODO:
 static ONE_DAY: i64 = 60 * 60 * 24; // in seconds
                                     //
 impl Users {
+    // pub async fn signin(pool: &PgPool , email: String , password: String )-> Result<NewrUserInfo , sqlx::Error> {
+    //     let user = sqlx::query_as!(
+    //         NewrUserInfo , 
+    //         r#"
+    //         "#).fetch_one(pool).await ; 
+    //
+    //
+    //
+    // }
     pub async fn signup(
         pool: &PgPool,
         username: String,

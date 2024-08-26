@@ -21,3 +21,24 @@ For more information on how to this works with other frontends/backends, head ov
 
 > npm install, npm start, etc.
 
+```bash
+Error: postgres: scanning system variables: pq: SSL is not enabled on the server
+
+atlas schema inspect -u "postgres://postgres:postgres@0.0.0.0:5432/app-db?sslmode=disable"
+
+
+atlas schema inspect \
+  --url "postgres://postgres:postgres@localhost:5432/app-db?search_path=public&sslmode=disable" \
+  --format '{{ sql . }}' >  schema/schema.sql
+
+atlas migrate diff create_blog_posts \
+  --dir "file://migrations" \
+  --to "file://schema/schema.sql" \
+  --dev-url "postgres://postgres:postgres@localhost:5432/app-db?search_path=public&sslmode=disable"
+
+atlas migrate push app \
+  --dev-url "postgres://postgres:postgres@localhost:5432/app-db?search_path=public&sslmode=disable"
+
+atlas migrate apply --env local
+
+```
