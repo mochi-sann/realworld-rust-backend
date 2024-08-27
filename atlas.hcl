@@ -10,7 +10,7 @@ env "local" {
 
   // Define the URL of the Dev Database for this environment
   // See: https://atlasgo.io/concepts/dev-database
-  dev = "docker://postgres:postgres@localhost:5432/app-db?search_path=public&sslmode=disable"
+  dev = "docker://postgres/14/app-db?search_path=public&sslmode=disable"
   exclude = [ "atlas_schema_revisions.*", "*.atlas_schema_revisions"  , "atlas_schema_revision" ]
   migration {
     // URL where the migration directory resides.
