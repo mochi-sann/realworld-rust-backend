@@ -45,12 +45,14 @@ table "users" {
     type = text
   }
   column "bio" {
-    null = true
+    null = false
     type = text
+    default = ""
   }
   column "image" {
-    null = true
+    null = false
     type = text
+    default = ""
   }
   column "created_at" {
     null    = false

@@ -1,0 +1,2 @@
+-- Modify "users" table
+ALTER TABLE "users" ALTER COLUMN "bio" SET NOT NULL, ALTER COLUMN "bio" SET DEFAULT '', ALTER COLUMN "image" SET NOT NULL, ALTER COLUMN "image" SET DEFAULT '';

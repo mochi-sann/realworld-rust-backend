@@ -10,6 +10,7 @@ use crate::handler::user::handler::NewrUserInfo;
 
 use super::handler::SignUpUserRes;
 
+#[derive(Deserialize, Serialize , Debug)]
 pub struct Users {
     pub id: i32,
     pub username: String,
@@ -33,15 +34,21 @@ static KEY: [u8; 32] = *include_bytes!("../../../secret.key"); // TODO:
 static ONE_DAY: i64 = 60 * 60 * 24; // in seconds
                                     //
 impl Users {
-    // pub async fn signin(pool: &PgPool , email: String , password: String )-> Result<NewrUserInfo , sqlx::Error> {
-    //     let user = sqlx::query_as!(
-    //         NewrUserInfo , 
-    //         r#"
-    //         "#).fetch_one(pool).await ; 
-    //
-    //
-    //
-    // }
+    pub async fn signin(pool: &PgPool, email: String, password: String) -> Result<(), sqlx::Error> {
+        let user = sqlx::query_as!(
+            Users,
+            r#"
+            SELECT * 
+            FROM users
+            WHERE email=$1;
+            "#,
+            email
+        )
+        .fetch_one(pool)
+        .await;
+        println!("{:?}", user);
+        Ok(())
+    }
     pub async fn signup(
         pool: &PgPool,
         username: String,
