@@ -9,8 +9,12 @@ use super::{
 };
 
 pub async fn signin(pool: web::Data<PgPool>, form: web::Json<SignInUserReq>) -> impl Responder {
-    // TODO: create signin api
-    HttpResponse::Ok().body("users signin")
+    let user = Users::signin(&pool, form.user.email.clone(), form.user.password.clone()).await;
+
+    match user {
+        Ok(value) => HttpResponse::Ok().json(value.add_token(Users::ganarate_token())),
+        Err(..) => HttpResponse::UnprocessableEntity().body(""),
+    }
 }
 
 pub async fn signup(pool: web::Data<PgPool>, form: web::Json<NewUserReq>) -> impl Responder {

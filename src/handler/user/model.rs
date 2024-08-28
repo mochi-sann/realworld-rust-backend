@@ -1,6 +1,6 @@
 use std::f32::consts::E;
 
-use bcrypt::{hash, DEFAULT_COST};
+use bcrypt::{hash, verify, DEFAULT_COST};
 use chrono::{DateTime, Utc};
 use jsonwebtoken::{EncodingKey, Header};
 use serde::{Deserialize, Serialize};
@@ -10,7 +10,7 @@ use crate::handler::user::handler::NewrUserInfo;
 
 use super::handler::SignUpUserRes;
 
-#[derive(Deserialize, Serialize , Debug)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Users {
     pub id: i32,
     pub username: String,
@@ -34,20 +34,34 @@ static KEY: [u8; 32] = *include_bytes!("../../../secret.key"); // TODO:
 static ONE_DAY: i64 = 60 * 60 * 24; // in seconds
                                     //
 impl Users {
-    pub async fn signin(pool: &PgPool, email: String, password: String) -> Result<(), sqlx::Error> {
+    pub async fn signin(
+        pool: &PgPool,
+        email: String,
+        password: String,
+    ) -> Result<NewrUserInfo, sqlx::Error> {
         let user = sqlx::query_as!(
             Users,
             r#"
             SELECT * 
             FROM users
-            WHERE email=$1;
+            WHERE email = $1;
             "#,
             email
         )
         .fetch_one(pool)
         .await;
-        println!("{:?}", user);
-        Ok(())
+
+        match user {
+            Ok(ref t) => {
+                let _ = verify(&password, &t.clone().password);
+                // t.to_new_user_info();
+            }
+            Err(_) => todo!(),
+        };
+
+        // let _ = verify(&password);
+        // println!("!!!!!!!!!!!!!! {:?}", user?.clone());
+        Ok(user?.to_new_user_info())
     }
     pub async fn signup(
         pool: &PgPool,
@@ -87,5 +101,14 @@ impl Users {
             &EncodingKey::from_secret(&KEY),
         )
         .unwrap()
+    }
+
+    pub fn to_new_user_info(&self) -> NewrUserInfo {
+        NewrUserInfo {
+            email: self.email.clone(),
+            username: self.username.clone(),
+            bio: Some(self.bio.clone()),
+            image: Some(self.image.clone()),
+        }
     }
 }
