@@ -3,14 +3,21 @@ use std::fmt::Debug;
 use actix_web::{web, HttpResponse, Responder};
 use sqlx::PgPool;
 
-use super::{handler::NewUser, model::Users};
+use super::{
+    handler::{NewUserReq, SignInUserReq},
+    model::Users,
+};
 
-pub async fn signin() -> impl Responder {
-    // TODO:
-    HttpResponse::Ok().body("users signin")
+pub async fn signin(pool: web::Data<PgPool>, form: web::Json<SignInUserReq>) -> impl Responder {
+    let user = Users::signin(&pool, form.user.email.clone(), form.user.password.clone()).await;
+
+    match user {
+        Ok(value) => HttpResponse::Ok().json(value.add_token(Users::ganarate_token())),
+        Err(..) => HttpResponse::UnprocessableEntity().body(""),
+    }
 }
 
-pub async fn signup(pool: web::Data<PgPool>, form: web::Json<NewUser>) -> impl Responder {
+pub async fn signup(pool: web::Data<PgPool>, form: web::Json<NewUserReq>) -> impl Responder {
     let new_user = Users::signup(
         &pool,
         form.user.username.clone(),
